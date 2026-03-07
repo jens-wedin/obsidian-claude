@@ -1,11 +1,29 @@
-import { Plugin } from "obsidian";
+import { Notice, Plugin } from "obsidian";
+import {
+  ClaudeAssistantSettings,
+  ClaudeAssistantSettingTab,
+  DEFAULT_SETTINGS,
+} from "./settings";
 
 export default class ClaudeAssistantPlugin extends Plugin {
+  settings: ClaudeAssistantSettings = DEFAULT_SETTINGS;
+
   async onload() {
-    console.log("Claude Assistant plugin loaded");
+    await this.loadSettings();
+    this.addSettingTab(new ClaudeAssistantSettingTab(this.app, this));
+
+    if (!this.settings.apiKey) {
+      new Notice("Claude Assistant: Please set your API key in Settings.");
+    }
   }
 
-  onunload() {
-    console.log("Claude Assistant plugin unloaded");
+  onunload() {}
+
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
   }
 }
