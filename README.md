@@ -37,7 +37,7 @@ npm run dev
 ### Installing in Obsidian
 
 1. Build the plugin with `npm run build`
-2. Copy `main.js`, `manifest.json` to your vault's `.obsidian/plugins/obsidian-claude/` directory
+2. Copy `main.js`, `manifest.json`, and `styles.css` to your vault's `.obsidian/plugins/obsidian-claude/` directory
 3. Enable the plugin in Obsidian settings
 
 ## License

@@ -1,0 +1,92 @@
+.claude-floating-menu {
+  position: absolute;
+  z-index: var(--layer-popover);
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: var(--shadow-s);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 320px;
+}
+
+.claude-floating-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.claude-floating-menu-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.claude-floating-menu-btn:focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: -2px;
+}
+
+.claude-floating-menu-btn.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.claude-floating-menu-btn .spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--text-faint);
+  border-top-color: var(--text-accent);
+  border-radius: 50%;
+  animation: claude-spin 0.6s linear infinite;
+}
+
+@keyframes claude-spin {
+  to { transform: rotate(360deg); }
+}
+
+.claude-custom-prompt-input {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  width: 100%;
+}
+
+.claude-custom-prompt-input input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+
+.claude-custom-prompt-input input:focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: -2px;
+}
+
+.claude-custom-prompt-input button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+}
+
+.claude-custom-prompt-input button:focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: -2px;
+}
