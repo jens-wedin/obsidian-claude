@@ -19,41 +19,49 @@ export default class ClaudeAssistantPlugin extends Plugin {
       new Notice("Claude Assistant: Please set your API key in Settings.");
     }
 
-    // Register context menu items on right-click
+    // Register context menu items on right-click inside a submenu
     this.registerEvent(
       this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor, info: MarkdownFileInfo) => {
         const selectedText = editor.getSelection();
         if (!selectedText || selectedText.trim().length === 0) return;
 
-        menu.addSeparator();
-
-        // Add each predefined action
-        for (const action of ACTIONS) {
-          menu.addItem((item) => {
-            item
-              .setTitle(`Claude: ${action.label}`)
-              .setIcon(action.icon)
-              .onClick(() => this.handleAction(editor, action));
-          });
-        }
-
-        // Add custom prompt action
         menu.addItem((item) => {
-          item
-            .setTitle("Claude: Custom prompt...")
-            .setIcon("message-square")
-            .onClick(() => {
-              new CustomPromptModal(this.app, (prompt) => {
-                const customAction: ActionDefinition = {
-                  id: "custom",
-                  label: "Custom",
-                  icon: "message-square",
-                  responseMode: "insert-below",
-                  systemPrompt: prompt,
-                };
-                this.handleAction(editor, customAction, prompt);
-              }).open();
+          item.setTitle("Claude Assistant").setIcon("bot");
+
+          // Use undocumented setSubmenu() to group actions neatly
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const submenu: Menu = (item as any).setSubmenu();
+
+          // Add each predefined action
+          for (const action of ACTIONS) {
+            submenu.addItem((sub) => {
+              sub
+                .setTitle(action.label)
+                .setIcon(action.icon)
+                .onClick(() => this.handleAction(editor, action));
             });
+          }
+
+          submenu.addSeparator();
+
+          // Add custom prompt action
+          submenu.addItem((sub) => {
+            sub
+              .setTitle("Custom prompt...")
+              .setIcon("message-square")
+              .onClick(() => {
+                new CustomPromptModal(this.app, (prompt) => {
+                  const customAction: ActionDefinition = {
+                    id: "custom",
+                    label: "Custom",
+                    icon: "message-square",
+                    responseMode: "insert-below",
+                    systemPrompt: prompt,
+                  };
+                  this.handleAction(editor, customAction, prompt);
+                }).open();
+              });
+          });
         });
       })
     );
