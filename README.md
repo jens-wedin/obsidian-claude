@@ -1,5 +1,7 @@
 # Claude Assistant — Obsidian Plugin
 
+![Claude Assistant for Obsidian](claude-obsidian.png)
+
 AI-powered writing assistant for Obsidian using Anthropic's Claude.
 
 ## Features
