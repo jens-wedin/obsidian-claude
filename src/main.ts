@@ -25,16 +25,9 @@ export default class ClaudeAssistantPlugin extends Plugin {
         const selectedText = editor.getSelection();
         if (!selectedText || selectedText.trim().length === 0) return;
 
-        menu.addItem((item) => {
-          item.setTitle("Claude Assistant").setIcon("bot");
-
-          // Use undocumented setSubmenu() to group actions neatly
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const submenu: Menu = (item as any).setSubmenu();
-
-          // Add each predefined action
+        const addActions = (target: Menu) => {
           for (const action of ACTIONS) {
-            submenu.addItem((sub) => {
+            target.addItem((sub) => {
               sub
                 .setTitle(action.label)
                 .setIcon(action.icon)
@@ -42,10 +35,9 @@ export default class ClaudeAssistantPlugin extends Plugin {
             });
           }
 
-          submenu.addSeparator();
+          target.addSeparator();
 
-          // Add custom prompt action
-          submenu.addItem((sub) => {
+          target.addItem((sub) => {
             sub
               .setTitle("Custom prompt...")
               .setIcon("message-square")
@@ -62,6 +54,25 @@ export default class ClaudeAssistantPlugin extends Plugin {
                 }).open();
               });
           });
+        };
+
+        menu.addItem((item) => {
+          item.setTitle("Claude Assistant").setIcon("bot");
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const menuItem = item as any;
+          if (typeof menuItem.setSubmenu === "function") {
+            addActions(menuItem.setSubmenu() as Menu);
+          } else {
+            // Fallback: add actions flat to main menu if setSubmenu unavailable
+            item.onClick(() => {
+              const fallback = new Menu();
+              addActions(fallback);
+              fallback.showAtMouseEvent(
+                new MouseEvent("contextmenu", { clientX: 0, clientY: 0 })
+              );
+            });
+          }
         });
       })
     );
