@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 (2026-03-08)
+
+### Changed
+
+- Replaced floating context menu with native Obsidian right-click context menu integration
+- Custom prompt now uses a modal dialog instead of inline input
+- Loading/completion feedback via Obsidian notices
+
+### Removed
+
+- Floating menu UI (replaced by native context menu)
+
 ## 0.1.0 (2026-03-08)
 
 ### Added

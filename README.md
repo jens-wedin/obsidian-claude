@@ -4,7 +4,7 @@ AI-powered writing assistant for Obsidian using Anthropic's Claude.
 
 ## Features
 
-Select text in any note to get a floating menu with AI actions:
+Select text in any note, right-click, and choose an AI action from the context menu:
 
 - **Improve** — Fix grammar, clarity, and flow
 - **Make shorter** — Condense text
@@ -13,7 +13,7 @@ Select text in any note to get a floating menu with AI actions:
 - **Change tone** — Rewrite in a different tone
 - **Summarize** — Add a summary below the selection
 - **Explain** — Add a simpler explanation below
-- **Custom prompt** — Type any instruction
+- **Custom prompt** — Opens a dialog where you can type any instruction
 
 ## Installation
 

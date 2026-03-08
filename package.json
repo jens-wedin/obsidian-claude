@@ -1,6 +1,6 @@
 {
   "name": "obsidian-claude",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Obsidian plugin for Claude AI writing assistance",
   "main": "main.js",
   "scripts": {

@@ -1,17 +1,15 @@
-import { MarkdownView, Notice, Plugin } from "obsidian";
+import { Editor, MarkdownFileInfo, Menu, Notice, Plugin } from "obsidian";
 import {
   ClaudeAssistantSettings,
   ClaudeAssistantSettingTab,
   DEFAULT_SETTINGS,
 } from "./settings";
 import { ClaudeService } from "./ClaudeService";
-import { FloatingMenu } from "./FloatingMenu";
-import { ActionDefinition } from "./actions";
+import { ACTIONS, ActionDefinition } from "./actions";
+import { CustomPromptModal } from "./CustomPromptModal";
 
 export default class ClaudeAssistantPlugin extends Plugin {
   settings: ClaudeAssistantSettings = DEFAULT_SETTINGS;
-  private floatingMenu: FloatingMenu | null = null;
-  private selectionTimeout: ReturnType<typeof setTimeout> | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -21,78 +19,52 @@ export default class ClaudeAssistantPlugin extends Plugin {
       new Notice("Claude Assistant: Please set your API key in Settings.");
     }
 
-    // Create floating menu in the workspace container
-    this.app.workspace.onLayoutReady(() => {
-      const container = document.body;
-      this.floatingMenu = new FloatingMenu(container, (action, customPrompt) =>
-        this.handleAction(action, customPrompt)
-      );
-    });
+    // Register context menu items on right-click
+    this.registerEvent(
+      this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor, info: MarkdownFileInfo) => {
+        const selectedText = editor.getSelection();
+        if (!selectedText || selectedText.trim().length === 0) return;
 
-    // Listen for selection changes
-    this.registerDomEvent(document, "selectionchange", () => {
-      if (this.selectionTimeout) clearTimeout(this.selectionTimeout);
-      this.selectionTimeout = setTimeout(() => this.onSelectionChange(), 300);
-    });
+        menu.addSeparator();
 
-    // Dismiss on click outside
-    this.registerDomEvent(document, "mousedown", (e: MouseEvent) => {
-      if (
-        this.floatingMenu?.isVisible() &&
-        !(e.target as HTMLElement).closest(".claude-floating-menu")
-      ) {
-        this.floatingMenu.hide();
-      }
-    });
+        // Add each predefined action
+        for (const action of ACTIONS) {
+          menu.addItem((item) => {
+            item
+              .setTitle(`Claude: ${action.label}`)
+              .setIcon(action.icon)
+              .onClick(() => this.handleAction(editor, action));
+          });
+        }
 
-    // Dismiss on Escape
-    this.registerDomEvent(document, "keydown", (e: KeyboardEvent) => {
-      if (e.key === "Escape" && this.floatingMenu?.isVisible()) {
-        this.floatingMenu.hide();
-      }
-    });
-  }
-
-  onunload() {
-    this.floatingMenu?.destroy();
-    if (this.selectionTimeout) clearTimeout(this.selectionTimeout);
-  }
-
-  private onSelectionChange() {
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) return;
-
-    const editor = activeView.editor;
-    const selectedText = editor.getSelection();
-
-    if (!selectedText || selectedText.trim().length === 0) {
-      return;
-    }
-
-    // Get cursor position to place the menu
-    const cursor = editor.getCursor("to");
-    const coords = (editor as any).coordsAtPos(
-      editor.posToOffset(cursor)
+        // Add custom prompt action
+        menu.addItem((item) => {
+          item
+            .setTitle("Claude: Custom prompt...")
+            .setIcon("message-square")
+            .onClick(() => {
+              new CustomPromptModal(this.app, (prompt) => {
+                const customAction: ActionDefinition = {
+                  id: "custom",
+                  label: "Custom",
+                  icon: "message-square",
+                  responseMode: "insert-below",
+                  systemPrompt: prompt,
+                };
+                this.handleAction(editor, customAction, prompt);
+              }).open();
+            });
+        });
+      })
     );
-
-    if (!coords) return;
-
-    const x = coords.left;
-    const y = coords.top - 8;
-
-    this.floatingMenu?.show(x, y);
   }
 
-  private async handleAction(action: ActionDefinition, customPrompt?: string) {
+  private async handleAction(editor: Editor, action: ActionDefinition, customPrompt?: string) {
     if (!this.settings.apiKey) {
       new Notice("Claude Assistant: Please set your API key in Settings.");
       return;
     }
 
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) return;
-
-    const editor = activeView.editor;
     const selectedText = editor.getSelection();
 
     if (!selectedText) {
@@ -100,7 +72,7 @@ export default class ClaudeAssistantPlugin extends Plugin {
       return;
     }
 
-    this.floatingMenu?.setLoading(action.id);
+    new Notice(`Claude: Running "${action.label}"...`);
 
     try {
       const service = new ClaudeService(
@@ -134,9 +106,8 @@ export default class ClaudeAssistantPlugin extends Plugin {
         );
       }
 
-      this.floatingMenu?.hide();
+      new Notice(`Claude: "${action.label}" complete.`);
     } catch (error) {
-      this.floatingMenu?.clearLoading();
       const message =
         error instanceof Error ? error.message : "Unknown error";
       new Notice(`Claude Assistant: ${message}`);
