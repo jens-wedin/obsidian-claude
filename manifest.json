@@ -5,5 +5,6 @@
   "minAppVersion": "1.0.0",
   "description": "AI-powered writing assistant using Claude. Select text to improve, translate, summarize, and more.",
   "author": "Jens Wedin",
+  "authorUrl": "https://github.com/jenswedin",
   "isDesktopOnly": false
 }

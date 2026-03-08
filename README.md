@@ -19,8 +19,16 @@ Select text in any note, right-click, and choose an AI action from the context m
 
 ## Installation
 
-1. Clone or download this repository into your vault's `.obsidian/plugins/` folder
-2. Run `npm install && npm run build`
+### Community Plugins (once published)
+
+1. Open Obsidian Settings > Community plugins
+2. Search for "Claude Assistant" and install it
+3. Enable the plugin and add your Anthropic API key in Settings > Claude Assistant
+
+### Manual installation
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/jenswedin/obsidian-claude/releases/latest)
+2. Copy them into `<vault>/.obsidian/plugins/obsidian-claude/`
 3. Enable "Claude Assistant" in Obsidian Settings > Community plugins
 4. Add your Anthropic API key in Settings > Claude Assistant
 
@@ -43,4 +51,4 @@ npm run build  # Production build
 
 ## License
 
-MIT
+[MIT](LICENSE)
